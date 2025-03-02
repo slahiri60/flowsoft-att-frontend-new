@@ -13,13 +13,13 @@ import {
   RouterProvider,
 } from 'react-router-dom';
 import LoginScreen from './screens/LoginScreen';
-import ActionItemScreen from './screens/ActionItemScreen';
+import ListActionItemsScreen from './screens/ListActionItemsScreen';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<App />}>
       <Route path="/login" element={<LoginScreen />} />
-      <Route path="/actionitem" element={<ActionItemScreen />} />
+      <Route path="/listactionitems" element={<ListActionItemsScreen />} />
     </Route>
   )
 );
