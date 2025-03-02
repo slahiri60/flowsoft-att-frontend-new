@@ -44,6 +44,7 @@ const ListActionItemsScreen = () => {
           <th>IMPORTANCE</th>
           <th>STATUS</th>
           <th>TIMES DEFERRED</th>
+          <th>DUE DATE</th>
           {/* Add more headers as needed */}
         </tr>
       </thead>
@@ -55,7 +56,8 @@ const ListActionItemsScreen = () => {
             <td>{item.criticality[0]}</td>
             <td>{item.importance[0]}</td>
             <td>{item.status[0]}</td>
-            <td>{item.timeSdeferred}</td>
+            <td>{item.timesdeferred}</td>
+            <td>{item.dueDate.substring(0,10)}  </td>
             {/* Add more data cells based on your data structure */}
           </tr>
         ))}
