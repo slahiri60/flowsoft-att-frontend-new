@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { LinkContainer } from 'react-router-bootstrap';
+import { Table, Button } from 'react-bootstrap';
 import axios from 'axios'
 
 const ListActionItemsScreen = () => {
@@ -30,7 +32,9 @@ const ListActionItemsScreen = () => {
   }
 
   return (
-    <table>
+    <>
+    <h1>Action Items</h1>
+    <Table striped bordered hover responsive className='table-sm'>
       <thead>
         <tr>
           {/* Adjust table headers based on your data structure */}
@@ -56,7 +60,8 @@ const ListActionItemsScreen = () => {
           </tr>
         ))}
       </tbody>
-    </table>
+      </Table>
+    </>
   );
 }
 
