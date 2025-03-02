@@ -1,6 +1,7 @@
 import React from 'react'
 import { Navbar, Nav, Container } from 'react-bootstrap';
 import { FaUser } from 'react-icons/fa';
+import { FaSitemap } from "react-icons/fa6";
 
 const Header = () => {
   return (
@@ -13,6 +14,9 @@ const Header = () => {
             <Nav className='ms-auto'>
               <Nav.Link href='/login'>
                 <FaUser /> Sign In
+              </Nav.Link>
+              <Nav.Link href='/listactionitems'>
+                <FaSitemap /> Action Items
               </Nav.Link>
             </Nav>
           </Navbar.Collapse>
