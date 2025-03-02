@@ -12,9 +12,16 @@ import {
   Route,
   RouterProvider,
 } from 'react-router-dom';
+import LoginScreen from './screens/LoginScreen';
+import ActionItemScreen from './screens/ActionItemScreen';
 
 const router = createBrowserRouter(
-  createRoutesFromElements(<Route path="/" element={<App />}></Route>)
+  createRoutesFromElements(
+    <Route path="/" element={<App />}>
+      <Route path="/login" element={<LoginScreen />} />
+      <Route path="/actionitem" element={<ActionItemScreen />} />
+    </Route>
+  )
 );
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
