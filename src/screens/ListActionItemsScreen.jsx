@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { LinkContainer } from 'react-router-bootstrap';
 import { Table, Button } from 'react-bootstrap';
-import axios from 'axios'
+import axios from 'axios';
+import { Navbar, Nav } from 'react-bootstrap';
 
 const ListActionItemsScreen = () => {
   const [data, setData] = useState(null);
@@ -11,7 +12,9 @@ const ListActionItemsScreen = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_API}/actionitems`);
+        const response = await axios.get(
+          `${process.env.REACT_APP_API}/actionitems`
+        );
         setData(response.data.data);
       } catch (err) {
         setError(err);
@@ -33,38 +36,46 @@ const ListActionItemsScreen = () => {
 
   return (
     <>
-    <h1>Action Items</h1>
-    <Table striped bordered hover responsive className='table-sm'>
-      <thead>
-        <tr>
-          {/* Adjust table headers based on your data structure */}
-          <th>SUMMARY</th>
-          <th>DESCRIPTION</th>
-          <th>CRITICALITY</th>
-          <th>IMPORTANCE</th>
-          <th>STATUS</th>
-          <th>TIMES DEFERRED</th>
-          <th>DUE DATE</th>
-          {/* Add more headers as needed */}
-        </tr>
-      </thead>
-      <tbody>
-      {data.map(item => (
-          <tr key={item._id}>
-            <td>{item.summary}</td>
-            <td>{item.description}</td>
-            <td>{item.criticality[0]}</td>
-            <td>{item.importance[0]}</td>
-            <td>{item.status[0]}</td>
-            <td>{item.timesdeferred}</td>
-            <td>{item.dueDate.substring(0,10)}  </td>
-            {/* Add more data cells based on your data structure */}
+      <h1>Action Items</h1>
+      <Table striped bordered hover responsive className="table-sm">
+        <thead>
+          <tr>
+            {/* Adjust table headers based on your data structure */}
+            <th>SUMMARY</th>
+            <th>DESCRIPTION</th>
+            <th>CRITICALITY</th>
+            <th>IMPORTANCE</th>
+            <th>STATUS</th>
+            <th>TIMES DEFERRED</th>
+            <th>DUE DATE</th>
+            <th></th>
+            {/* Add more headers as needed */}
           </tr>
-        ))}
-      </tbody>
+        </thead>
+        <tbody>
+          {data.map((item) => (
+            <tr key={item._id}>
+              <td>{item.summary}</td>
+              <td>{item.description}</td>
+              <td>{item.criticality[0]}</td>
+              <td>{item.importance[0]}</td>
+              <td>{item.status[0]}</td>
+              <td>{item.timesdeferred}</td>
+              <td>{item.dueDate.substring(0, 10)}</td>
+              <td>
+                <LinkContainer to={`/actionitemdetails/${item._id}`}>
+                  <Button variant="light" className="btn-sm">
+                    Details
+                  </Button>
+                </LinkContainer>
+              </td>
+              {/* Add more data cells based on your data structure */}
+            </tr>
+          ))}
+        </tbody>
       </Table>
     </>
   );
-}
+};
 
-export default ListActionItemsScreen
+export default ListActionItemsScreen;
