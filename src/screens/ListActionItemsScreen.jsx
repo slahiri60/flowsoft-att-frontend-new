@@ -48,6 +48,7 @@ const ListActionItemsScreen = () => {
             <th>STATUS</th>
             <th>TIMES DEFERRED</th>
             <th>DUE DATE</th>
+            <th>OVERDUE</th>
             <th></th>
             {/* Add more headers as needed */}
           </tr>
@@ -63,6 +64,9 @@ const ListActionItemsScreen = () => {
               <td>{item.timesdeferred}</td>
               <td>{item.dueDate.substring(0, 10)}</td>
               <td>
+                {dateManipulation(item.dueDate.substring(0, 10)) ? 'NO' : 'YES'}
+              </td>
+              <td>
                 <LinkContainer to={`/actionitemdetails/${item._id}`}>
                   <Button variant="light" className="btn-sm">
                     Details
@@ -77,5 +81,16 @@ const ListActionItemsScreen = () => {
     </>
   );
 };
+
+function dateManipulation(dateRetrieved) {
+  const dateString = new Date().toISOString();
+  const datePart = dateString.substring(0, 10);
+
+  if (dateRetrieved > datePart) {
+    return true;
+  } else {
+    return false;
+  }
+}
 
 export default ListActionItemsScreen;
