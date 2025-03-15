@@ -14,13 +14,20 @@ const importanceOptions = [
   { value: 'Unimportant', label: 'Unimportant' },
 ];
 
+const statusOptions = [
+  { value: 'Pending', label: 'Pending' },
+  { value: 'In Progress', label: 'In Progress' },
+  { value: 'Completed', label: 'Completed' },
+  { value: 'Dropped', label: 'Dropped' },
+];
+
 const ActionItemDetailsScreen = () => {
   const { id } = useParams();
   const [summary, setSummary] = useState('');
   const [description, setDescription] = useState('');
   const [criticality, setCriticality] = useState('');
   const [importance, setImportance] = useState('');
-  const [shipping, setShipping] = useState('');
+  const [status, setStatus] = useState('');
   // hook
   const navigate = useNavigate();
   const params = useParams();
@@ -31,6 +38,10 @@ const ActionItemDetailsScreen = () => {
 
   const handleChangeImportance = (selectedOption) => {
     setImportance(selectedOption ? selectedOption.value : null);
+  };
+
+  const handleChangeStatus = (selectedOption) => {
+    setStatus(selectedOption ? selectedOption.value : null);
   };
 
   useEffect(() => {
@@ -47,7 +58,7 @@ const ActionItemDetailsScreen = () => {
       console.log('Criticality value retrieved: ' + data.data.criticality[0]);
       setCriticality(data.data.criticality[0]);
       setImportance(data.data.importance[0]);
-      setShipping(false);
+      setStatus(data.data.status[0]);
     } catch (err) {
       console.log(err);
     }
@@ -61,6 +72,7 @@ const ActionItemDetailsScreen = () => {
         description: description,
         criticality: criticality,
         importance: importance,
+        status: status,
       };
 
       const { data } = await axios.put(
@@ -120,6 +132,14 @@ const ActionItemDetailsScreen = () => {
               (option) => option.value === importance
             )}
             onChange={handleChangeImportance}
+            placeholder="Select an option"
+          />
+
+          <Select
+            className="mb-4 p-2"
+            options={statusOptions}
+            value={statusOptions.find((option) => option.value === status)}
+            onChange={handleChangeStatus}
             placeholder="Select an option"
           />
 
