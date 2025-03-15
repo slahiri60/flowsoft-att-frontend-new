@@ -2,6 +2,17 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import Select from 'react-select';
+
+const criticalityOptions = [
+  { value: 'Critical', label: 'Critical' },
+  { value: 'Noncritical', label: 'Noncritical' },
+];
+
+const importanceOptions = [
+  { value: 'Important', label: 'Important' },
+  { value: 'Unimportant', label: 'Unimportant' },
+];
 
 const ActionItemDetailsScreen = () => {
   const { id } = useParams();
@@ -9,9 +20,18 @@ const ActionItemDetailsScreen = () => {
   const [description, setDescription] = useState('');
   const [criticality, setCriticality] = useState('');
   const [importance, setImportance] = useState('');
+  const [shipping, setShipping] = useState('');
   // hook
   const navigate = useNavigate();
   const params = useParams();
+
+  const handleChangeCriticality = (selectedOption) => {
+    setCriticality(selectedOption ? selectedOption.value : null);
+  };
+
+  const handleChangeImportance = (selectedOption) => {
+    setImportance(selectedOption ? selectedOption.value : null);
+  };
 
   useEffect(() => {
     loadActionitem();
@@ -24,8 +44,10 @@ const ActionItemDetailsScreen = () => {
       );
       setSummary(data.data.summary);
       setDescription(data.data.description);
-      setCriticality(data.data.criticality);
-      setImportance(data.data.importance);
+      console.log('Criticality value retrieved: ' + data.data.criticality[0]);
+      setCriticality(data.data.criticality[0]);
+      setImportance(data.data.importance[0]);
+      setShipping(false);
     } catch (err) {
       console.log(err);
     }
@@ -81,18 +103,24 @@ const ActionItemDetailsScreen = () => {
             onChange={(e) => setDescription(e.target.value)}
           />
 
-          <input
-            type="text"
-            className="form-control p-2 mb-3"
-            value={criticality}
-            onChange={(e) => setCriticality(e.target.value)}
+          <Select
+            className="mb-4 p-2"
+            options={criticalityOptions}
+            value={criticalityOptions.find(
+              (option) => option.value === criticality
+            )}
+            onChange={handleChangeCriticality}
+            placeholder="Select an option"
           />
 
-          <input
-            type="text"
-            className="form-control p-2 mb-3"
-            value={importance}
-            onChange={(e) => setImportance(e.target.value)}
+          <Select
+            className="mb-4 p-2"
+            options={importanceOptions}
+            value={importanceOptions.find(
+              (option) => option.value === importance
+            )}
+            onChange={handleChangeImportance}
+            placeholder="Select an option"
           />
 
           <div className="d-flex justify-content-between">
