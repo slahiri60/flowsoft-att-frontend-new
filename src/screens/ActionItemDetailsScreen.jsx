@@ -1,76 +1,108 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Link, useParams } from 'react-router-dom';
-import { Row, Col, ListGroup, Image, Card, Button } from 'react-bootstrap';
+import toast from 'react-hot-toast';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 
 const ActionItemDetailsScreen = () => {
   const { id } = useParams();
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [summary, setSummary] = useState('');
+  const [description, setDescription] = useState('');
+  const [criticality, setCriticality] = useState('');
+  const [importance, setImportance] = useState('');
+  // hook
+  const navigate = useNavigate();
+  const params = useParams();
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_API}/actionitems/${id}`
-        );
-        setData(response.data.data);
-        console.log(response);
-      } catch (err) {
-        setError(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
+    loadActionitem();
   }, []);
 
-  if (loading) {
-    return <p>Loading...</p>;
-  }
+  const loadActionitem = async () => {
+    try {
+      const { data } = await axios.get(
+        `${process.env.REACT_APP_API}/actionitems/${id}`
+      );
+      setSummary(data.data.summary);
+      setDescription(data.data.description);
+      setCriticality(data.data.criticality);
+      setImportance(data.data.importance);
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
-  if (error) {
-    return <p>Error: {error.message}</p>;
-  }
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const actionitemData = {
+        summary: summary,
+        description: description,
+        criticality: criticality,
+        importance: importance,
+      };
+
+      const { data } = await axios.put(
+        `${process.env.REACT_APP_API}/actionitems/${id}`,
+        actionitemData
+      );
+      if (data?.error) {
+        toast.error(data.error);
+      } else {
+        toast.success(`Action Item updated`);
+        navigate('/listactionitems');
+      }
+    } catch (err) {
+      console.log(err);
+      toast.error('Action Item update failed. Try again.');
+    }
+  };
 
   return (
-    <>
-      <Link className="btn btn-light my-3" to="/listactionitems">
-        Go Back
-      </Link>
-      <h1>Action Item Details</h1>
-      <Row>
-        <Col md={8}>
-          <ListGroup variant="flush">
-            <ListGroup.Item>
-              <p>
-                <strong>Summary: </strong> {data.summary}
-              </p>
-              <p>
-                <strong>Description: </strong> {data.description}
-              </p>
-              <p>
-                <strong>Criticality: </strong> {data.criticality[0]}
-              </p>
-              <p>
-                <strong>Importance: </strong> {data.importance[0]}
-              </p>
-              <p>
-                <strong>Status: </strong> {data.status[0]}
-              </p>
-              <p>
-                <strong>Time Deferred: </strong> {data.timesdeferred}
-              </p>
-              <p>
-                <strong>Due Date: </strong> {data.dueDate.substring(0, 10)}
-              </p>
-            </ListGroup.Item>
-          </ListGroup>
-        </Col>
-      </Row>
-    </>
+    <div className="container mt-5">
+      <div className="row"></div>
+      <div className="col-md-6 offset-md-3">
+        <form onSubmit={handleSubmit}>
+          <Link className="btn btn-light my-3" to="/listactionitems">
+            Go Back
+          </Link>
+          <h1>Update Action Item</h1>
+
+          <input
+            type="text"
+            className="form-control p-2 mb-3"
+            value={summary}
+            onChange={(e) => setSummary(e.target.value)}
+          />
+
+          <input
+            type="text"
+            className="form-control p-2 mb-3"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+          />
+
+          <input
+            type="text"
+            className="form-control p-2 mb-3"
+            value={criticality}
+            onChange={(e) => setCriticality(e.target.value)}
+          />
+
+          <input
+            type="text"
+            className="form-control p-2 mb-3"
+            value={importance}
+            onChange={(e) => setImportance(e.target.value)}
+          />
+
+          <div className="d-flex justify-content-between">
+            <button className="btn btn-primary" type="submit">
+              Update
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
   );
 };
 
