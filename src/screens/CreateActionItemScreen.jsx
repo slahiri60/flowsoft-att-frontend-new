@@ -16,10 +16,10 @@ const importanceOptions = [
 ];
 
 const CreateActionItemScreen = () => {
-  const [summary, setSummary] = useState('');
-  const [description, setDescription] = useState('');
-  const [criticality, setCriticality] = useState(null);
-  const [importance, setImportance] = useState(null);
+  const [summary, setSummary] = useState();
+  const [description, setDescription] = useState();
+  const [criticality, setCriticality] = useState('Critical');
+  const [importance, setImportance] = useState('Important');
 
   const handleChangeCriticality = (selectedOption) => {
     setCriticality(selectedOption ? selectedOption.value : null);
@@ -34,6 +34,11 @@ const CreateActionItemScreen = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      console.log('criticality: ' + criticality);
+      if (criticality === null) {
+        criticality = 'Critical';
+        console.log('criticality: ' + criticality);
+      }
       const { data } = await axios.post(
         `${process.env.REACT_APP_API}/actionitems`,
         {
