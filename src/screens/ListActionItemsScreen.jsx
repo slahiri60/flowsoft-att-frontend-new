@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { LinkContainer } from 'react-router-bootstrap';
 import { Table, Button } from 'react-bootstrap';
 import axios from 'axios';
-import { Navbar, Nav } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
+import { FaEdit } from 'react-icons/fa';
 
 const ListActionItemsScreen = () => {
   const [data, setData] = useState(null);
@@ -67,11 +67,14 @@ const ListActionItemsScreen = () => {
                 {dateManipulation(item.dueDate.substring(0, 10)) ? 'NO' : 'YES'}
               </td>
               <td>
-                <LinkContainer to={`/actionitemdetails/${item._id}`}>
-                  <Button variant="light" className="btn-sm">
-                    Details
-                  </Button>
-                </LinkContainer>
+                <Button
+                  as={Link}
+                  to={`/actionitemdetails/${item._id}`}
+                  variant="light"
+                  className="btn-sm mx-2"
+                >
+                  <FaEdit />
+                </Button>
               </td>
               {/* Add more data cells based on your data structure */}
             </tr>

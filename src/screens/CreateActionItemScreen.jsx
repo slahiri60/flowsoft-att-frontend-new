@@ -48,12 +48,12 @@ const CreateActionItemScreen = () => {
         toast.error(data.error);
       } else {
         //toast.success('Action Item created successfully');
+        navigate('/listactionitems');
       }
     } catch (err) {
       console.log(err);
       toast.error('Action Item creation failed; try again');
     }
-    navigate('/listactionitems');
   };
 
   return (
