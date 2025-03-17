@@ -2,12 +2,118 @@ import React, { useState, useEffect } from 'react';
 import { Table, Button } from 'react-bootstrap';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
-import { FaEdit } from 'react-icons/fa';
+import { FaEdit, FaArrowUp, FaArrowDown } from 'react-icons/fa';
 
 const ListActionItemsScreen = () => {
-  const [data, setData] = useState(null);
+  const [actionitems, setActionitems] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [sorted, setSorted] = useState({ sorted: '_id', reversed: false });
+
+  const sortBySummary = () => {
+    const actionitemsCopy = [...actionitems];
+    actionitemsCopy.sort((actionitemA, actionitemB) => {
+      const summaryA = String(actionitemA.summary);
+      const summaryB = String(actionitemB.summary);
+      if (sorted.reversed) {
+        return summaryA.localeCompare(summaryB);
+      }
+      return summaryB.localeCompare(summaryA);
+    });
+    setActionitems(actionitemsCopy);
+    setSorted({ sorted: 'summary', reversed: !sorted.reversed });
+    console.log(sorted);
+  };
+
+  const sortByDesription = () => {
+    const actionitemsCopy = [...actionitems];
+    actionitemsCopy.sort((actionitemA, actionitemB) => {
+      const descriptionA = String(actionitemA.description);
+      const descriptionB = String(actionitemB.description);
+      if (sorted.reversed) {
+        return descriptionA.localeCompare(descriptionB);
+      }
+      return descriptionB.localeCompare(descriptionA);
+    });
+    setActionitems(actionitemsCopy);
+    setSorted({ sorted: 'description', reversed: !sorted.reversed });
+    console.log(sorted);
+  };
+
+  const sortByCriticality = () => {
+    const actionitemsCopy = [...actionitems];
+    actionitemsCopy.sort((actionitemA, actionitemB) => {
+      const criticalityA = String(actionitemA.criticality[0]);
+      const criticalityB = String(actionitemB.criticality[0]);
+      if (sorted.reversed) {
+        return criticalityA.localeCompare(criticalityB);
+      }
+      return criticalityB.localeCompare(criticalityA);
+    });
+    setActionitems(actionitemsCopy);
+    setSorted({ sorted: 'criticality', reversed: !sorted.reversed });
+    console.log(sorted);
+  };
+
+  const sortByImportance = () => {
+    const actionitemsCopy = [...actionitems];
+    actionitemsCopy.sort((actionitemA, actionitemB) => {
+      const importanceA = String(actionitemA.importance[0]);
+      const importanceB = String(actionitemB.importance[0]);
+      if (sorted.reversed) {
+        return importanceA.localeCompare(importanceB);
+      }
+      return importanceB.localeCompare(importanceA);
+    });
+    setActionitems(actionitemsCopy);
+    setSorted({ sorted: 'importance', reversed: !sorted.reversed });
+    console.log(sorted);
+  };
+
+  const sortByStatus = () => {
+    const actionitemsCopy = [...actionitems];
+    actionitemsCopy.sort((actionitemA, actionitemB) => {
+      const statusA = String(actionitemA.status[0]);
+      const statusB = String(actionitemB.status[0]);
+      if (sorted.reversed) {
+        return statusA.localeCompare(statusB);
+      }
+      return statusB.localeCompare(statusA);
+    });
+    setActionitems(actionitemsCopy);
+    setSorted({ sorted: 'status', reversed: !sorted.reversed });
+    console.log(sorted);
+  };
+
+  const sortByTimesdeferred = () => {
+    const actionitemsCopy = [...actionitems];
+    actionitemsCopy.sort((actionitemA, actionitemB) => {
+      const timesdeferredA = actionitemA.timesdeferred;
+      const timesdeferredB = actionitemB.timesdeferred;
+      if (sorted.reversed) {
+        return timesdeferredA - timesdeferredB;
+      }
+      return timesdeferredB - timesdeferredA;
+    });
+    setActionitems(actionitemsCopy);
+    setSorted({ sorted: 'timesdeferred', reversed: !sorted.reversed });
+    console.log(sorted);
+  };
+
+  const sortByDuedate = () => {
+    const actionitemsCopy = [...actionitems];
+    actionitemsCopy.sort((actionitemA, actionitemB) => {
+      const duedateA = String(actionitemA.dueDate);
+      const duedateB = String(actionitemB.dueDate);
+      if (sorted.reversed) {
+        return duedateA.localeCompare(duedateB);
+      }
+      return duedateB.localeCompare(duedateA);
+    });
+    setActionitems(actionitemsCopy);
+    setSorted({ sorted: 'duedate', reversed: !sorted.reversed });
+    console.log(sorted);
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -15,7 +121,7 @@ const ListActionItemsScreen = () => {
         const response = await axios.get(
           `${process.env.REACT_APP_API}/actionitems`
         );
-        setData(response.data.data);
+        setActionitems(response.data.data);
       } catch (err) {
         setError(err);
       } finally {
@@ -34,6 +140,13 @@ const ListActionItemsScreen = () => {
     return <p>Error: {error.message}</p>;
   }
 
+  const renderArrow = () => {
+    if (sorted.reversed) {
+      return <FaArrowUp />;
+    }
+    return <FaArrowDown />;
+  };
+
   return (
     <>
       <h1>Action Items</h1>
@@ -41,20 +154,41 @@ const ListActionItemsScreen = () => {
         <thead>
           <tr>
             {/* Adjust table headers based on your data structure */}
-            <th>SUMMARY</th>
-            <th>DESCRIPTION</th>
-            <th>CRITICALITY</th>
-            <th>IMPORTANCE</th>
-            <th>STATUS</th>
-            <th>TIMES DEFERRED</th>
-            <th>DUE DATE</th>
+            <th onClick={sortBySummary}>
+              <span style={{ marginRight: 10 }}>SUMMARY</span>
+              {sorted.sorted === 'summary' ? renderArrow() : null}
+            </th>
+            <th onClick={sortByDesription}>
+              <span style={{ marginRight: 10 }}>DESCRIPTION</span>
+              {sorted.sorted === 'description' ? renderArrow() : null}
+            </th>
+            <th onClick={sortByCriticality}>
+              <span style={{ marginRight: 10 }}>CRITICALITY</span>
+              {sorted.sorted === 'criticality' ? renderArrow() : null}
+            </th>
+            <th onClick={sortByImportance}>
+              <span style={{ marginRight: 10 }}>IMPORTANCE</span>
+              {sorted.sorted === 'importance' ? renderArrow() : null}
+            </th>
+            <th onClick={sortByStatus}>
+              <span style={{ marginRight: 10 }}>STATUS</span>
+              {sorted.sorted === 'status' ? renderArrow() : null}
+            </th>
+            <th onClick={sortByTimesdeferred}>
+              <span style={{ marginRight: 10 }}>TIMES DEFERRED</span>
+              {sorted.sorted === 'timesdeferred' ? renderArrow() : null}
+            </th>
+            <th onClick={sortByDuedate}>
+              <span style={{ marginRight: 10 }}>DUE DATE</span>
+              {sorted.sorted === 'duedate' ? renderArrow() : null}
+            </th>
             <th>OVERDUE</th>
             <th></th>
             {/* Add more headers as needed */}
           </tr>
         </thead>
         <tbody>
-          {data.map((item) => (
+          {actionitems.map((item) => (
             <tr key={item._id}>
               <td>{item.summary}</td>
               <td>{item.description}</td>
