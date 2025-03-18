@@ -108,7 +108,7 @@ const ActionItemDetailsScreen = () => {
             onChange={(e) => setSummary(e.target.value)}
           />
 
-          <input
+          <textarea
             type="text"
             className="form-control p-2 mb-3"
             value={description}
