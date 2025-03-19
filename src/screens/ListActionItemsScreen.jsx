@@ -9,6 +9,7 @@ const ListActionItemsScreen = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [sorted, setSorted] = useState({ sorted: '_id', reversed: false });
+  const [keyword, setKeyword] = useState('');
 
   const sortBySummary = () => {
     const actionitemsCopy = [...actionitems];
@@ -147,9 +148,53 @@ const ListActionItemsScreen = () => {
     return <FaArrowDown />;
   };
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_API}/actionitems/search/${keyword}`
+      );
+      setActionitems(response.data.data);
+    } catch (err) {
+      setError(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleClear = async (e) => {
+    window.location.reload(false);
+  };
+
   return (
     <>
       <h1>Action Items</h1>
+      <form className="d-flex" onSubmit={handleSubmit}>
+        <input
+          type="search"
+          style={{ borderRadius: '0px' }}
+          placeholder="Search"
+          onChange={(e) => setKeyword(e.target.value)}
+        ></input>
+        <button
+          className="btn btn-outline-primary"
+          type="submit"
+          style={{ borderRadius: '0px' }}
+        >
+          Search
+        </button>
+      </form>
+      <p></p>
+      <form className="d-flex" onSubmit={handleClear}>
+        <button
+          className="btn btn-outline-primary"
+          type="submit"
+          style={{ borderRadius: '0px' }}
+        >
+          Clear Search
+        </button>
+      </form>
+      <p></p>
       <Table striped bordered hover responsive className="table-sm">
         <thead>
           <tr>
