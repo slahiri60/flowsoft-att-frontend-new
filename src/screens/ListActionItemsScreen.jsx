@@ -12,6 +12,7 @@ const ListActionItemsScreen = () => {
   const [sorted, setSorted] = useState({ sorted: '_id', reversed: false });
   const [keyword, setKeyword] = useState('');
   const [pageCount, setpageCount] = useState(0);
+  const [isSearching, setIsSearching] = useState(false);
   let limit = 10;
 
   const sortBySummary = () => {
@@ -166,6 +167,7 @@ const ListActionItemsScreen = () => {
         `${process.env.REACT_APP_API}/actionitems/search/${keyword}`
       );
       setActionitems(response.data.data);
+      setIsSearching(true);
     } catch (err) {
       setError(err);
     } finally {
@@ -290,23 +292,25 @@ const ListActionItemsScreen = () => {
           ))}
         </tbody>
       </Table>
-      <ReactPaginate
-        previousLabel={'Previous'}
-        nextLabel={'Next'}
-        breakLabel={'...'}
-        pageCount={pageCount}
-        marginPagesDisplayed={2}
-        pageRangeDisplayed={3}
-        onPageChange={handlePageClick}
-        containerClassName={'pagination justify-content-center'}
-        previousLinkClassName={'page-link'}
-        nextLinkClassName={'page-link'}
-        pageClassName={'page-item'}
-        pageLinkClassName={'page-link'}
-        breakClassName={'page-item'}
-        breakLinkClassName={'page-link'}
-        activeClassName={'active'}
-      />
+      {!isSearching && (
+        <ReactPaginate
+          previousLabel={'Previous'}
+          nextLabel={'Next'}
+          breakLabel={'...'}
+          pageCount={pageCount}
+          marginPagesDisplayed={2}
+          pageRangeDisplayed={3}
+          onPageChange={handlePageClick}
+          containerClassName={'pagination justify-content-center'}
+          previousLinkClassName={'page-link'}
+          nextLinkClassName={'page-link'}
+          pageClassName={'page-item'}
+          pageLinkClassName={'page-link'}
+          breakClassName={'page-item'}
+          breakLinkClassName={'page-link'}
+          activeClassName={'active'}
+        />
+      )}
     </>
   );
 };
