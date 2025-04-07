@@ -13,6 +13,7 @@ const ListActionItemsScreen = () => {
   const [keyword, setKeyword] = useState('');
   const [pageCount, setpageCount] = useState(0);
   const [isSearching, setIsSearching] = useState(false);
+  const [isSorted, setIsSorted] = useState(true);
   let limit = 10;
 
   const sortBySummary = () => {
@@ -27,6 +28,7 @@ const ListActionItemsScreen = () => {
     });
     setActionitems(actionitemsCopy);
     setSorted({ sorted: 'summary', reversed: !sorted.reversed });
+    setIsSorted(true);
     console.log(sorted);
   };
 
@@ -42,6 +44,7 @@ const ListActionItemsScreen = () => {
     });
     setActionitems(actionitemsCopy);
     setSorted({ sorted: 'description', reversed: !sorted.reversed });
+    setIsSorted(true);
     console.log(sorted);
   };
 
@@ -57,6 +60,7 @@ const ListActionItemsScreen = () => {
     });
     setActionitems(actionitemsCopy);
     setSorted({ sorted: 'criticality', reversed: !sorted.reversed });
+    setIsSorted(true);
     console.log(sorted);
   };
 
@@ -72,6 +76,7 @@ const ListActionItemsScreen = () => {
     });
     setActionitems(actionitemsCopy);
     setSorted({ sorted: 'importance', reversed: !sorted.reversed });
+    setIsSorted(true);
     console.log(sorted);
   };
 
@@ -87,6 +92,7 @@ const ListActionItemsScreen = () => {
     });
     setActionitems(actionitemsCopy);
     setSorted({ sorted: 'status', reversed: !sorted.reversed });
+    setIsSorted(true);
     console.log(sorted);
   };
 
@@ -102,6 +108,7 @@ const ListActionItemsScreen = () => {
     });
     setActionitems(actionitemsCopy);
     setSorted({ sorted: 'timesdeferred', reversed: !sorted.reversed });
+    setIsSorted(true);
     console.log(sorted);
   };
 
@@ -117,6 +124,7 @@ const ListActionItemsScreen = () => {
     });
     setActionitems(actionitemsCopy);
     setSorted({ sorted: 'duedate', reversed: !sorted.reversed });
+    setIsSorted(true);
     console.log(sorted);
   };
 
@@ -154,10 +162,12 @@ const ListActionItemsScreen = () => {
   }
 
   const renderArrow = () => {
-    if (sorted.reversed) {
-      return <FaArrowUp />;
+    if (isSorted) {
+      if (sorted.reversed) {
+        return <FaArrowUp />;
+      }
+      return <FaArrowDown />;
     }
-    return <FaArrowDown />;
   };
 
   const handleSubmit = async (e) => {
@@ -191,6 +201,8 @@ const ListActionItemsScreen = () => {
         `${process.env.REACT_APP_API}/actionitems?page=${currentPage}&limit=${limit}`
       );
       setActionitems(response.data.data);
+      setIsSorted(false);
+      console.log('Sorting enabled: ' + sorted.sorted);
     } catch (err) {
       setError(err);
     } finally {
