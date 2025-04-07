@@ -3,6 +3,7 @@ import { Table, Button } from 'react-bootstrap';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { FaEdit, FaArrowUp, FaArrowDown } from 'react-icons/fa';
+import ReactPaginate from 'react-paginate';
 
 const ListActionItemsScreen = () => {
   const [actionitems, setActionitems] = useState(null);
@@ -10,6 +11,8 @@ const ListActionItemsScreen = () => {
   const [error, setError] = useState(null);
   const [sorted, setSorted] = useState({ sorted: '_id', reversed: false });
   const [keyword, setKeyword] = useState('');
+  const [pageCount, setpageCount] = useState(0);
+  let limit = 10;
 
   const sortBySummary = () => {
     const actionitemsCopy = [...actionitems];
@@ -117,10 +120,17 @@ const ListActionItemsScreen = () => {
   };
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchInitialData = async () => {
       try {
-        const response = await axios.get(
+        const responsewithoutlimit = await axios.get(
           `${process.env.REACT_APP_API}/actionitems`
+        );
+        const totalActionitems = responsewithoutlimit.data.data.length;
+        console.log('totalActionitems: ' + totalActionitems);
+        console.log('page count: ' + Math.ceil(totalActionitems / limit));
+        setpageCount(Math.ceil(totalActionitems / limit));
+        const response = await axios.get(
+          `${process.env.REACT_APP_API}/actionitems?page=1&limit=${limit}`
         );
         setActionitems(response.data.data);
       } catch (err) {
@@ -130,7 +140,8 @@ const ListActionItemsScreen = () => {
       }
     };
 
-    fetchData();
+    //fetchDataSize();
+    fetchInitialData();
   }, []);
 
   if (loading) {
@@ -164,6 +175,25 @@ const ListActionItemsScreen = () => {
 
   const handleClear = async (e) => {
     window.location.reload(false);
+  };
+
+  const handlePageClick = async (data) => {
+    let currentPage = data.selected + 1;
+    console.log('Current Page: ' + currentPage);
+    const actionitemsFromServer = await fetchDataOnPageChange(currentPage);
+  };
+
+  const fetchDataOnPageChange = async (currentPage) => {
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_API}/actionitems?page=${currentPage}&limit=${limit}`
+      );
+      setActionitems(response.data.data);
+    } catch (err) {
+      setError(err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -260,6 +290,23 @@ const ListActionItemsScreen = () => {
           ))}
         </tbody>
       </Table>
+      <ReactPaginate
+        previousLabel={'Previous'}
+        nextLabel={'Next'}
+        breakLabel={'...'}
+        pageCount={pageCount}
+        marginPagesDisplayed={2}
+        pageRangeDisplayed={3}
+        onPageChange={handlePageClick}
+        containerClassName={'pagination justify-content-center'}
+        previousLinkClassName={'page-link'}
+        nextLinkClassName={'page-link'}
+        pageClassName={'page-item'}
+        pageLinkClassName={'page-link'}
+        breakClassName={'page-item'}
+        breakLinkClassName={'page-link'}
+        activeClassName={'active'}
+      />
     </>
   );
 };
