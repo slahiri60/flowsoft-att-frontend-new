@@ -14,7 +14,59 @@ const ListActionItemsScreen = () => {
   const [pageCount, setpageCount] = useState(0);
   const [isSearching, setIsSearching] = useState(false);
   const [isSorted, setIsSorted] = useState(true);
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [dateFilterActive, setDateFilterActive] = useState(false);
+  const [selectedFilters, setSelectedFilters] = useState({});
+  const [filteredProducts, setFilteredProducts] = useState([]);
   let limit = 10;
+
+  // Sample filter categories and options
+  const categories = [
+    {
+      name: 'Criticality',
+      options: ['Critical', 'Noncritical'],
+    },
+    {
+      name: 'Importance',
+      options: ['Important', 'Unimportant'],
+    },
+    {
+      name: 'Status',
+      options: ['Pending', 'In Progress', 'Completed', 'Dropped'],
+    },
+  ];
+
+  // Toggle filter selection
+  const toggleFilter = (category, option) => {
+    console.log('toggleFilter activated');
+    console.log('category: ' + category);
+    console.log('option: ' + option);
+    setSelectedFilters((prev) => {
+      const categoryFilters = prev[category] || [];
+      console.log('categoryFilters: ' + categoryFilters);
+
+      // If option is already selected, remove it; otherwise, add it
+      if (categoryFilters.includes(option)) {
+        console.log('if path executed to remove filter');
+        return {
+          ...prev,
+          [category]: categoryFilters.filter((item) => item !== option),
+        };
+      } else {
+        console.log('else path executed to add filter');
+        return {
+          ...prev,
+          [category]: [...categoryFilters, option],
+        };
+      }
+    });
+  };
+
+  // Check if a filter is selected
+  const isSelected = (category, option) => {
+    return selectedFilters[category]?.includes(option) || false;
+  };
 
   const sortBySummary = () => {
     const actionitemsCopy = [...actionitems];
@@ -30,6 +82,11 @@ const ListActionItemsScreen = () => {
     setSorted({ sorted: 'summary', reversed: !sorted.reversed });
     setIsSorted(true);
     console.log(sorted);
+  };
+
+  // Clear all filters
+  const clearAllFilters = () => {
+    setSelectedFilters({});
   };
 
   const sortByDesription = () => {
@@ -130,14 +187,45 @@ const ListActionItemsScreen = () => {
 
   const fetchActionItems = async (currentPage) => {
     try {
-      const response = await axios.get(
-        `${process.env.REACT_APP_API}/actionitems?page=${currentPage}&limit=${limit}`
+      // Build query parameters
+      let queryParams = new URLSearchParams();
+      console.log('queryParams: ' + queryParams);
+
+      // Add filter params
+      console.log(
+        'selectedFilters for adding queryParams: ' +
+          JSON.stringify(selectedFilters, null, 2)
       );
-      const totalActionitems = response.headers.get('X-Total-Count');
+      Object.entries(selectedFilters).forEach(([category, options]) => {
+        console.log('category: ' + category);
+        console.log('options: ' + options);
+        options.forEach((option) => {
+          if (category === 'Criticality') {
+            queryParams.append('criticality', option);
+          } else if (category === 'Importance') {
+            queryParams.append('importance', option);
+          } else if (category === 'Status') {
+            queryParams.append('status', option);
+          }
+        });
+      });
+
+      //queryParams.append('criticality', 'Critical');
+      //queryParams.append('importance', 'Unimportant');
+      //queryParams.append('status', 'Dropped');
+      console.log('Updated queryParams: ' + queryParams);
+
+      const responseWithoutPagination = await axios.get(
+        `${process.env.REACT_APP_API}/actionitems?${queryParams}`
+      );
+      let totalActionitems = responseWithoutPagination.data.count;
       console.log('totalActionitems: ' + totalActionitems);
       console.log('page count: ' + Math.ceil(totalActionitems / limit));
       setpageCount(Math.ceil(totalActionitems / limit));
-      setActionitems(response.data.data);
+      const responseWithPagination = await axios.get(
+        `${process.env.REACT_APP_API}/actionitems?${queryParams}&page=${currentPage}&limit=${limit}`
+      );
+      setActionitems(responseWithPagination.data.data);
       setIsSorted(false);
     } catch (err) {
       setError(err);
@@ -146,10 +234,14 @@ const ListActionItemsScreen = () => {
     }
   };
 
+  console.log(
+    'selectedFilters driving useEffect: ' +
+      JSON.stringify(selectedFilters, null, 2)
+  );
   useEffect(() => {
     //fetchDataSize();
     fetchActionItems(1);
-  }, []);
+  }, [selectedFilters]);
 
   if (loading) {
     return <p>Loading...</p>;
@@ -197,6 +289,18 @@ const ListActionItemsScreen = () => {
     fetchActionItems(currentPage);
   };
 
+  // Get all currently selected filters for display
+  const getAllSelectedFilters = () => {
+    const selected = [];
+    Object.entries(selectedFilters).forEach(([category, options]) => {
+      options.forEach((option) => {
+        selected.push(`${category}: ${option}`);
+      });
+    });
+
+    return selected;
+  };
+
   return (
     <>
       <h1>Action Items</h1>
@@ -216,15 +320,88 @@ const ListActionItemsScreen = () => {
         </button>
       </form>
       <p></p>
-      <form className="d-flex" onSubmit={handleClear}>
-        <button
-          className="btn btn-outline-primary"
-          type="submit"
-          style={{ borderRadius: '0px' }}
-        >
-          Clear Search
-        </button>
-      </form>
+      <form className="d-flex" onSubmit={handleClear}></form>
+      <button
+        className="btn btn-outline-primary"
+        type="submit"
+        style={{ borderRadius: '0px' }}
+      >
+        Clear Search
+      </button>
+      <div className="p-6 max-w-4xl mx-auto bg-gray-50 rounded-lg shadow">
+        <h2 className="text-2xl font-bold mb-6">Filter Action Items</h2>
+
+        {/* Filter sections */}
+        <div className="space-y-6">
+          {/* Other filter categories */}
+          {categories.map((category) => (
+            <div
+              key={category.name}
+              className="bg-white p-4 rounded-md shadow-sm"
+            >
+              <h3 className="font-medium text-lg mb-3">{category.name}</h3>
+              <div className="flex flex-wrap gap-2">
+                {category.options.map((option) => (
+                  <button
+                    key={option}
+                    onClick={() => toggleFilter(category.name, option)}
+                    className={`px-4 py-2 rounded-full text-sm font-medium transition-colors
+                    ${
+                      isSelected(category.name, option)
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
+                    }`}
+                  >
+                    {option}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Selected filters display */}
+        <div className="mt-6">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="font-medium">Selected Filters:</h3>
+            {getAllSelectedFilters().length > 0 && (
+              <button
+                onClick={clearAllFilters}
+                className="text-sm text-blue-600 hover:text-blue-800"
+              >
+                Clear All
+              </button>
+            )}
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+            {getAllSelectedFilters().length > 0 ? (
+              getAllSelectedFilters().map((filter) => (
+                <div
+                  key={filter}
+                  className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm"
+                >
+                  {filter}
+                </div>
+              ))
+            ) : (
+              <p className="text-gray-500 text-sm">No filters selected</p>
+            )}
+          </div>
+        </div>
+
+        <div className="mt-8">
+          <div className="bg-white p-6 rounded-md shadow-sm text-center">
+            <button
+              onClick={clearAllFilters}
+              className="mt-3 px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700"
+            >
+              Clear Filters
+            </button>
+          </div>
+        </div>
+      </div>
+
       <p></p>
       <Table striped bordered hover responsive className="table-sm">
         <thead>
