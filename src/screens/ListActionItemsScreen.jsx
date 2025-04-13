@@ -128,29 +128,27 @@ const ListActionItemsScreen = () => {
     console.log(sorted);
   };
 
-  useEffect(() => {
-    const fetchInitialData = async () => {
-      try {
-        const responsewithoutlimit = await axios.get(
-          `${process.env.REACT_APP_API}/actionitems`
-        );
-        const totalActionitems = responsewithoutlimit.data.data.length;
-        console.log('totalActionitems: ' + totalActionitems);
-        console.log('page count: ' + Math.ceil(totalActionitems / limit));
-        setpageCount(Math.ceil(totalActionitems / limit));
-        const response = await axios.get(
-          `${process.env.REACT_APP_API}/actionitems?page=1&limit=${limit}`
-        );
-        setActionitems(response.data.data);
-      } catch (err) {
-        setError(err);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchActionItems = async (currentPage) => {
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_API}/actionitems?page=${currentPage}&limit=${limit}`
+      );
+      const totalActionitems = response.headers.get('X-Total-Count');
+      console.log('totalActionitems: ' + totalActionitems);
+      console.log('page count: ' + Math.ceil(totalActionitems / limit));
+      setpageCount(Math.ceil(totalActionitems / limit));
+      setActionitems(response.data.data);
+      setIsSorted(false);
+    } catch (err) {
+      setError(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     //fetchDataSize();
-    fetchInitialData();
+    fetchActionItems(1);
   }, []);
 
   if (loading) {
@@ -192,22 +190,11 @@ const ListActionItemsScreen = () => {
   const handlePageClick = async (data) => {
     let currentPage = data.selected + 1;
     console.log('Current Page: ' + currentPage);
-    const actionitemsFromServer = await fetchDataOnPageChange(currentPage);
+    await fetchDataOnPageChange(currentPage);
   };
 
   const fetchDataOnPageChange = async (currentPage) => {
-    try {
-      const response = await axios.get(
-        `${process.env.REACT_APP_API}/actionitems?page=${currentPage}&limit=${limit}`
-      );
-      setActionitems(response.data.data);
-      setIsSorted(false);
-      console.log('Sorting enabled: ' + sorted.sorted);
-    } catch (err) {
-      setError(err);
-    } finally {
-      setLoading(false);
-    }
+    fetchActionItems(currentPage);
   };
 
   return (
