@@ -320,14 +320,15 @@ const ListActionItemsScreen = () => {
         </button>
       </form>
       <p></p>
-      <form className="d-flex" onSubmit={handleClear}></form>
-      <button
-        className="btn btn-outline-primary"
-        type="submit"
-        style={{ borderRadius: '0px' }}
-      >
-        Clear Search
-      </button>
+      <form className="d-flex" onSubmit={handleClear}>
+        <button
+          className="btn btn-outline-primary"
+          type="submit"
+          style={{ borderRadius: '0px' }}
+        >
+          Clear Search
+        </button>
+      </form>
       <div className="p-6 max-w-4xl mx-auto bg-gray-50 rounded-lg shadow">
         <h2 className="text-2xl font-bold mb-6">Filter Action Items</h2>
 
