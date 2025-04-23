@@ -13,6 +13,7 @@ import {
   RouterProvider,
 } from 'react-router-dom';
 import LoginScreen from './screens/LoginScreen';
+import RegisterScreen from './screens/RegisterScreen';
 import ListActionItemsScreen from './screens/ListActionItemsScreen';
 import ActionItemDetailsScreen from './screens/ActionItemDetailsScreen';
 import CreateActionItemScreen from './screens/CreateActionItemScreen';
@@ -20,6 +21,7 @@ import CreateActionItemScreen from './screens/CreateActionItemScreen';
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<App />}>
+      <Route path="/register" element={<RegisterScreen />} />
       <Route path="/login" element={<LoginScreen />} />
       <Route path="/listactionitems" element={<ListActionItemsScreen />} />
       <Route path="/createactionitem" element={<CreateActionItemScreen />} />
