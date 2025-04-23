@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Button } from 'react-bootstrap';
-import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { FaEdit, FaArrowUp, FaArrowDown } from 'react-icons/fa';
 import ReactPaginate from 'react-paginate';
+import api from '../config/api';
 
 const ListActionItemsScreen = () => {
   const [actionitems, setActionitems] = useState(null);
@@ -215,14 +215,14 @@ const ListActionItemsScreen = () => {
       //queryParams.append('status', 'Dropped');
       console.log('Updated queryParams: ' + queryParams);
 
-      const responseWithoutPagination = await axios.get(
+      const responseWithoutPagination = await api.get(
         `${process.env.REACT_APP_API}/actionitems?${queryParams}`
       );
       let totalActionitems = responseWithoutPagination.data.count;
       console.log('totalActionitems: ' + totalActionitems);
       console.log('page count: ' + Math.ceil(totalActionitems / limit));
       setpageCount(Math.ceil(totalActionitems / limit));
-      const responseWithPagination = await axios.get(
+      const responseWithPagination = await api.get(
         `${process.env.REACT_APP_API}/actionitems?${queryParams}&page=${currentPage}&limit=${limit}`
       );
       setActionitems(responseWithPagination.data.data);
@@ -263,7 +263,7 @@ const ListActionItemsScreen = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.get(
+      const response = await api.get(
         `${process.env.REACT_APP_API}/actionitems/search/${keyword}`
       );
       setActionitems(response.data.data);
