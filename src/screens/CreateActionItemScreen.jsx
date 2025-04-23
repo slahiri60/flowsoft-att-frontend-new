@@ -1,9 +1,9 @@
 import React from 'react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import toast, { Toaster } from 'react-hot-toast';
 import Select from 'react-select';
+import api from '../config/api';
 
 const criticalityOptions = [
   { value: 'Critical', label: 'Critical' },
@@ -39,7 +39,7 @@ const CreateActionItemScreen = () => {
         criticality = 'Critical';
         console.log('criticality: ' + criticality);
       }
-      const { data } = await axios.post(
+      const { data } = await api.post(
         `${process.env.REACT_APP_API}/actionitems`,
         {
           summary,
