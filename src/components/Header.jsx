@@ -15,6 +15,9 @@ const Header = () => {
               <Nav.Link href="/login">
                 <FaUser /> Sign In
               </Nav.Link>
+              <Nav.Link href="/register">
+                <FaUser /> Register
+              </Nav.Link>
               <Nav.Link href="/listactionitems">
                 <FaSitemap /> Action Items
               </Nav.Link>

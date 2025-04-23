@@ -4,7 +4,8 @@ import axios from 'axios';
 import toast, { Toaster } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 
-const LoginScreen = () => {
+const RegisterScreen = () => {
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -14,17 +15,18 @@ const LoginScreen = () => {
     e.preventDefault();
 
     // Debug logging
-    console.log('Submitting with:', { email, password });
+    console.log('Submitting with:', { name, email, password });
 
-    if (!email || !password) {
-      toast.error('Email and password are required');
+    if (!name || !email || !password) {
+      toast.error('Name, Email and password are required');
       return;
     }
 
     try {
       const { data } = await axios.post(
-        `${process.env.REACT_APP_API}/auth/login`,
+        `${process.env.REACT_APP_API}/auth/register`,
         {
+          name,
           email,
           password,
         }
@@ -33,11 +35,11 @@ const LoginScreen = () => {
       if (data?.error) {
         toast.error(data.error);
       } else {
-        navigate('/listactionitems');
+        navigate('/login');
       }
     } catch (err) {
       console.log(err);
-      toast.error('Login failed; try again');
+      toast.error('Registration failed; try again');
     }
   };
 
@@ -48,7 +50,14 @@ const LoginScreen = () => {
           <div className="col-md-6 offset-md-3">
             <form onSubmit={handleSubmit}>
               <Toaster />
-              <h1>Login</h1>
+              <h1>Register</h1>
+              <input
+                type="text"
+                className="form-control mb-4 p-2"
+                placeholder="Enter name"
+                onChange={(e) => setName(e.target.value)}
+                autoFocus
+              />
               <input
                 type="text"
                 className="form-control mb-4 p-2"
@@ -73,4 +82,4 @@ const LoginScreen = () => {
   );
 };
 
-export default LoginScreen;
+export default RegisterScreen;
