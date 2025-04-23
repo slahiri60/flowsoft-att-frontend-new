@@ -33,7 +33,15 @@ const LoginScreen = () => {
       if (data?.error) {
         toast.error(data.error);
       } else {
-        navigate('/listactionitems');
+        // Store the token in localStorage
+        localStorage.setItem('token', data.token);
+        toast.success('Login successful');
+
+        // Force a navigation/refresh to update the header
+        setTimeout(() => {
+          window.location.href = '/listactionitems'; // This causes a full page reload
+          // Alternative: navigate('/listactionitems', { replace: true });
+        }, 1000); // Small delay to allow the toast to be visible
       }
     } catch (err) {
       console.log(err);
