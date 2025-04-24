@@ -3,6 +3,7 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import Select from 'react-select';
+import api from '../config/api';
 
 const criticalityOptions = [
   { value: 'Critical', label: 'Critical' },
@@ -50,7 +51,7 @@ const ActionItemDetailsScreen = () => {
 
   const loadActionitem = async () => {
     try {
-      const { data } = await axios.get(
+      const { data } = await api.get(
         `${process.env.REACT_APP_API}/actionitems/${id}`
       );
       setSummary(data.data.summary);
@@ -75,7 +76,7 @@ const ActionItemDetailsScreen = () => {
         status: status,
       };
 
-      const { data } = await axios.put(
+      const { data } = await api.put(
         `${process.env.REACT_APP_API}/actionitems/${id}`,
         actionitemData
       );
