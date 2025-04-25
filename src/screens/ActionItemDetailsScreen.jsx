@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams, useLocation } from 'react-router-dom';
 import Select from 'react-select';
 import api from '../config/api';
 
@@ -31,6 +31,7 @@ const ActionItemDetailsScreen = () => {
   const [status, setStatus] = useState('');
   // hook
   const navigate = useNavigate();
+  const location = useLocation();
   const params = useParams();
 
   const handleChangeCriticality = (selectedOption) => {
@@ -62,6 +63,12 @@ const ActionItemDetailsScreen = () => {
       setStatus(data.data.status[0]);
     } catch (err) {
       console.log(err);
+
+      // Check if error is an unauthorized response (401)
+      if (err.response && err.response.status === 401) {
+        // Redirect to login page
+        navigate('/login', { state: { from: location.pathname } });
+      }
     }
   };
 
